@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import dev.jian.dto.AuthenticationResponse;
 import dev.jian.dto.LoginRequest;
 import dev.jian.dto.RegisterRequest;
 import dev.jian.exceptions.SpringRedditException;
@@ -81,12 +82,13 @@ public class AuthService {
 		userRepository.save(user);
 	}
 
-	public void login(LoginRequest loginRequest) {
+	public AuthenticationResponse login(LoginRequest loginRequest) {
 		// UsernamePasswordAuthenticationToken is a customized class in security.authentication
 		Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
 				loginRequest.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authenticate);
-		jwtProvider.generateToken(authenticate);
+		String token = jwtProvider.generateToken(authenticate);
+		return new AuthenticationResponse(token, loginRequest.getUsername());
 	}
 	
 }
