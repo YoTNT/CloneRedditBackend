@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import dev.jian.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 
 @EnableWebSecurity
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	private final UserDetailsService userDetailsService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	
     @Bean(BeanIds.AUTHENTICATION_MANAGER)	// Whenever we autowired the AnthenticationManager, Spring find this bean and inject the class
     @Override
@@ -34,6 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.permitAll()
 				.anyRequest()
 				.authenticated();
+		// Let Spring Security know about the JWT validation filter class
+		httpSecurity.addFilterBefore(jwtAuthenticationFilter, 
+				UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Autowired
