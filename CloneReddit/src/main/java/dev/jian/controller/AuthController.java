@@ -1,5 +1,7 @@
 package dev.jian.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,11 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.jian.dto.RefreshTokenRequest;
+
 import dev.jian.dto.AuthenticationResponse;
 import dev.jian.dto.LoginRequest;
 import dev.jian.dto.RegisterRequest;
 import dev.jian.service.AuthService;
+import dev.jian.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,6 +28,7 @@ import lombok.AllArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
+	private final RefreshTokenService refreshTokenService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
@@ -37,7 +45,19 @@ public class AuthController {
 	
 	@PostMapping("/login")
 	public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+		System.out.println("Trying to login...");
 		return authService.login(loginRequest);
+	}
+	
+	@PostMapping("/refresh/token")
+    public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return authService.refreshToken(refreshTokenRequest);
+    }
+	
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest){
+		refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+		return ResponseEntity.status(OK).body("Refresh Token Deleted Successfully!!");
 	}
 	
 }
