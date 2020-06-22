@@ -36,16 +36,10 @@ public class CommentService {
 		
 		Post post = postRepository.findById(commentsDto.getPostId())
 			.orElseThrow(() -> new PostNotFoundException(commentsDto.getPostId().toString()));
-		System.out.println("*****Post: " + post);
 		Comment comment = commentMapper.map(commentsDto, post, authService.getCurrentUser());
-		System.out.println("*****CommentsDto: " + commentsDto);
-		System.out.println("*****CurrentUser: " + authService.getCurrentUser());
-		System.out.println("!!!!!!!!!Comment: " + comment);
 		commentRepository.save(comment);
 		String message = mailContentBuilder.build(post.getUser().getUsername() + " posted a comment on your post." + POST_URL);
-		System.out.println("Getting email message: " + message);
 		sendCommentNotification(message, post.getUser());
-		System.out.println("After sending email");
 	}
 
 	private void sendCommentNotification(String message, User user) {

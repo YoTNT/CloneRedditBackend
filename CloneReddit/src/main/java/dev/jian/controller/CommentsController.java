@@ -28,7 +28,6 @@ public class CommentsController {
     @PostMapping
     public ResponseEntity<Void> createComment(@RequestBody CommentsDto commentsDto) {
         commentService.save(commentsDto);
-        System.out.println("Finished saving comment");
         return new ResponseEntity<>(CREATED);
     }
 

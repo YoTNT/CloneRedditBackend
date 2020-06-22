@@ -28,7 +28,6 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Void> createPost(@RequestBody PostRequest postRequest) {
-    	System.out.println("Accessing the createPost API...");
         postService.save(postRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);	// Status: 201
     }
