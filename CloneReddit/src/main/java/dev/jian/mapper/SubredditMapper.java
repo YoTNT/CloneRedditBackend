@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import dev.jian.dto.SubredditDto;
 import dev.jian.model.Post;
 import dev.jian.model.Subreddit;
+import dev.jian.model.User;
 
 @Mapper(componentModel = "spring")
 public interface SubredditMapper {
@@ -22,5 +23,6 @@ public interface SubredditMapper {
 
 	@InheritInverseConfiguration
 	@Mapping(target = "posts", ignore = true)
-	Subreddit mapDtoToSubreddit(SubredditDto subredditDto);
+	@Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
+	Subreddit mapDtoToSubreddit(SubredditDto subredditDto, User user);
 }

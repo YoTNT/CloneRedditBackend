@@ -3,6 +3,8 @@ package dev.jian.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import dev.jian.service.AuthService;
+
 import dev.jian.dto.SubredditDto;
 import dev.jian.exceptions.SpringRedditException;
 import dev.jian.mapper.SubredditMapper;
@@ -22,29 +24,14 @@ public class SubredditService {
 
 	private final SubredditRepository subredditRepository;
 	private final SubredditMapper subredditMapper;
+	private final AuthService authService;
 	
 	@Transactional
 	public SubredditDto save(SubredditDto subredditDto) {
-//		Subreddit subreddit = mapSubredditDto(subredditDto);	// Comment out when replacing MapStruct
-		Subreddit save = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto));
-//		Subreddit save = subredditRepository.save(subreddit);
+		Subreddit save = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto, authService.getCurrentUser()));
 		subredditDto.setId(save.getId());
 		return subredditDto;
 	}
-
-	// Replaced by MapStruct
-//	private Subreddit mapSubredditDto(SubredditDto subredditDto) {
-//		return Subreddit.builder().name(subredditDto.getName())
-//			.description(subredditDto.getDescription())
-//			.build();
-//	}
-//	
-//	private SubredditDto mapToDto(Subreddit subreddit) {
-//		return SubredditDto.builder().name(subreddit.getName())
-//				.id(subreddit.getId())
-//				.numberOfPosts(subreddit.getPosts().size())
-//				.build();
-//	}
 
 	@Transactional(readOnly = true)
 	public List<SubredditDto> getAll() {
@@ -52,7 +39,6 @@ public class SubredditService {
 		return subredditRepository.findAll()
 				.stream()
 				.map(subredditMapper::mapSubredditToDto)
-//				.map(this::mapToDto)
 				.collect(toList());			
 	}
 
